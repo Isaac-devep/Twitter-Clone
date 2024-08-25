@@ -1,5 +1,3 @@
-// src/components/Feed.js
-
 import React, { useEffect, useState } from 'react';
 import TweetBox from './TweetBox';
 import tweetService from '../services/tweetService';
@@ -27,11 +25,20 @@ const Feed = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <TweetBox onTweetPosted={handleTweetPosted} />
-      {tweets.map((tweet) => (
-        <TweetCard key={tweet._id} tweet={tweet} />
-      ))}
+    <div className="flex-1 overflow-auto p-4 max-w-xl mx-auto">
+      <header className="p-4 border-b border-gray-700">
+        <h1 className="text-xl font-bold">Home</h1>
+      </header>
+      <div className="p-4">
+        <TweetBox onTweetPosted={handleTweetPosted} />
+        {tweets.length > 0 ? (
+          tweets.map((tweet) => (
+            <TweetCard key={tweet._id} tweet={tweet} />
+          ))
+        ) : (
+          <p>No tweets available.</p>
+        )}
+      </div>
     </div>
   );
 };

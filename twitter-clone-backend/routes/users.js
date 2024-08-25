@@ -1,5 +1,3 @@
-// routes/users.js
-
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
@@ -10,6 +8,7 @@ const auth = require('../middleware/auth');
 // ================================
 router.get('/search', auth, async (req, res) => {
   const query = req.query.q;
+  const currentUserId = req.user;
 
   if (!query) {
     return res.status(400).json({ error: 'Query parameter is required' });
@@ -18,9 +17,14 @@ router.get('/search', auth, async (req, res) => {
   try {
     const users = await User.find({
       username: { $regex: query, $options: 'i' }
-    }).select('username profileImage bio');
+    }).select('username profileImage bio followers');
 
-    res.status(200).json(users);
+    const usersWithFollowStatus = users.map(user => {
+      const isFollowing = user.followers.includes(currentUserId);
+      return { ...user.toObject(), isFollowing };
+    });
+
+    res.status(200).json(usersWithFollowStatus);
   } catch (error) {
     console.error('Error searching users:', error);
     res.status(500).json({ error: 'Server Error' });
@@ -32,13 +36,14 @@ router.get('/search', auth, async (req, res) => {
 // ================================
 router.get('/:id', auth, async (req, res) => {
   const userId = req.params.id;
-  const currentUserId = req.user; // ID del usuario autenticado
+  const currentUserId = req.user; 
 
   try {
     const user = await User.findById(userId)
       .select('username profileImage bio followers following')
       .populate('followers', 'username profileImage')
-      .populate('following', 'username profileImage');
+      .populate('following', 'username profileImage')
+      .populate('tweets', 'content createdAt'); // Asegúrate de que los tweets se incluyan
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });

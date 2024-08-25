@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema({
   location: { type: String },
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  tweets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tweet' }],
 });
 
 const User = mongoose.model('User', UserSchema);
