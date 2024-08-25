@@ -1,0 +1,10 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Personalizaciones adicionales */
+body {
+  background-color: theme('colors.twitterBackground');
+  color: theme('colors.twitterDark');
+}
